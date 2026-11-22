@@ -43,13 +43,13 @@ const experienceMetrics = {
 
 export default function Experience({ experiences = [] }) {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [activeExpId, setActiveExpId] = useState(experiences[0]?.id || 'exp-1');
+  const [activeExpId, setActiveExpId] = useState(experiences?.[0]?.id || 'exp-1');
 
-  if (!experiences || experiences.length === 0) return null;
+  const safeExperiences = Array.isArray(experiences) ? experiences : [];
 
   const filteredExperiences = activeCategory === "All"
-    ? experiences
-    : experiences.filter(exp => {
+    ? safeExperiences
+    : safeExperiences.filter(exp => {
         const cat = exp.category || exp.type || "";
         return cat.toLowerCase().includes(activeCategory.toLowerCase());
       });
@@ -63,6 +63,8 @@ export default function Experience({ experiences = [] }) {
       }
     }
   }, [filteredExperiences, activeExpId]);
+
+  if (!experiences || experiences.length === 0) return null;
 
   const activeIndex = filteredExperiences.findIndex(e => e.id === activeExpId);
   const safeActiveIndex = activeIndex >= 0 ? activeIndex : 0;
