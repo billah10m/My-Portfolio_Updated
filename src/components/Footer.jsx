@@ -1,0 +1,147 @@
+'use client';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ArrowUp, Terminal, Clock, Lock } from 'lucide-react';
+import { GithubIcon, LinkedinIcon } from './SocialIcons';
+import Magnetic from './ux/Magnetic';
+
+const NAV_LINKS = [
+  { id: 'hero',       label: 'Home' },
+  { id: 'about',      label: 'About' },
+  { id: 'tech-stack', label: 'Skills' },
+  { id: 'projects',   label: 'Projects' },
+  { id: 'research',   label: 'Research' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'activities', label: 'Activities' },
+  { id: 'contact',    label: 'Contact' },
+];
+
+export default function Footer({ personInfo = {}, experiences = [], websiteSettings = {} }) {
+  const [time, setTime] = useState('');
+
+  const showExp = websiteSettings?.showExperience !== false && experiences && experiences.length > 0;
+  const filteredNavLinks = NAV_LINKS.filter(l => l.id !== 'experience' || showExp);
+
+  useEffect(() => {
+    const tick = () => setTime(
+      new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    );
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const name = personInfo.name || 'Asif Billah';
+  const title = personInfo.title || personInfo.role || 'Software Developer & AI Researcher';
+  const tagline = personInfo.tagline || 'Building High-Performance Web Systems, AI Solutions & Automated Intelligent Workflows';
+
+  return (
+    <footer
+      className="pt-8 pb-28 sm:pb-10 md:py-12 relative z-10 text-xs font-mono"
+      style={{ borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-3)' }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+        {/* TOP: 3-column */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-6 items-start pb-6" style={{ borderBottom: '1px solid var(--color-border)' }}>
+
+          {/* Brand & Tagline */}
+          <div className="sm:col-span-2 md:col-span-5 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center glass-button flex-shrink-0">
+                <Terminal className="w-5 h-5" style={{ color: 'var(--color-accent)' }} />
+              </div>
+              <div className="min-w-0">
+                <span className="text-base font-bold font-sans block truncate" style={{ color: 'var(--color-text)' }}>
+                  {name}
+                </span>
+                <span className="text-xs font-semibold block truncate" style={{ color: 'var(--color-accent)' }}>
+                  {title}
+                </span>
+              </div>
+            </div>
+            <p className="text-xs leading-relaxed font-sans max-w-sm" style={{ color: 'var(--color-text-muted)' }}>
+              {tagline}
+            </p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap max-w-full"
+              style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-accent)', color: 'var(--color-accent)' }}>
+              <span className="w-2 h-2 rounded-full animate-ping flex-shrink-0" style={{ backgroundColor: 'var(--color-accent)' }} />
+              <span className="truncate">Available for Technical Roles &amp; AI Research</span>
+            </div>
+          </div>
+
+          {/* Quick Nav */}
+          <div className="md:col-span-4 space-y-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider font-sans block" style={{ color: 'var(--color-text)' }}>
+              Quick Navigation
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {filteredNavLinks.map(link => (
+                <button key={link.id} onClick={() => scrollTo(link.id)}
+                  className="text-xs font-semibold text-left py-1 transition-colors touch-target-exempt"
+                  style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', minHeight: 'unset' }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--color-accent)'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}
+                >
+                  → {link.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Clock + Top */}
+          <div className="md:col-span-3 flex flex-row sm:flex-col md:flex-col items-start md:items-end gap-4">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: 'var(--color-text-muted)' }}>
+                LOCAL TIME (DHAKA, BST)
+              </span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold"
+                style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
+                <Clock className="w-3.5 h-3.5" style={{ color: 'var(--color-accent)' }} />
+                {time || '12:00:00 AM'}
+              </div>
+            </div>
+            <Magnetic>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105 touch-target-exempt"
+                style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text)', cursor: 'pointer', minHeight: 'unset' }}
+                aria-label="Back to top"
+              >
+                Back to Top
+                <ArrowUp className="w-3.5 h-3.5" style={{ color: 'var(--color-accent)' }} />
+              </button>
+            </Magnetic>
+          </div>
+        </div>
+
+        {/* BOTTOM: Credits */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+          <div>
+            &copy; {new Date().getFullYear()} {name}. All rights reserved.
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/admin" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 text-zinc-400">
+              <Lock className="w-3.5 h-3.5 text-cyan-400" /> Admin Portal
+            </Link>
+            <a href="https://github.com/asifbillah" target="_blank" rel="noopener noreferrer"
+              className="hover:text-accent transition-colors flex items-center gap-1.5" style={{ color: 'var(--color-text-muted)' }}>
+              <GithubIcon className="w-3.5 h-3.5 fill-current" /> GitHub
+            </a>
+            <a href="https://linkedin.com/in/asifbillah" target="_blank" rel="noopener noreferrer"
+              aria-label="Visit Asif Billah on LinkedIn"
+              className="p-2 rounded-xl border flex items-center justify-center transition-all group"
+              style={{ background: 'var(--color-surface-2)', borderColor: 'var(--color-border)' }}>
+              <LinkedinIcon className="w-4 h-4 fill-zinc-400 group-hover:fill-sky-400 transition-colors" />
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+  );
+}

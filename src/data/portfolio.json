@@ -1,0 +1,382 @@
+{
+  "personInfo": {
+    "name": "Asif Billah",
+    "title": "Software Developer & AI Researcher",
+    "role": "Software Developer & AI Researcher",
+    "subtitle": "Bridging Software Engineering & AI Innovation | General Secretary, DIU-CPC",
+    "headline": "Bridging Software Engineering, Deep Learning Research & Collegiate Leadership",
+    "aboutHeadline": "Bridging Software Engineering, Deep Learning Research & Collegiate Leadership",
+    "tagline": "Building High-Performance Web Systems, AI Solutions & Automated Intelligent Workflows",
+    "about": "I am an enthusiastic Computer Science and Engineering undergraduate at Daffodil International University with a strong commitment to architecting scalable software systems and advancing Artificial Intelligence and Machine Learning solutions. Serving as the General Secretary of DIU Computer & Programming Club (DIU-CPC), I spearhead national tech events, competitive programming bootcamps, and technical workshops, while actively pursuing medical AI research.",
+    "bio": "I am an enthusiastic Computer Science and Engineering undergraduate at Daffodil International University with a strong commitment to architecting scalable software systems and advancing Artificial Intelligence and Machine Learning solutions. Serving as the General Secretary of DIU Computer & Programming Club (DIU-CPC), I spearhead national tech events, competitive programming bootcamps, and technical workshops, while actively pursuing medical AI research.",
+    "location": "Daffodil Smart City, Ashulia, Dhaka, Bangladesh",
+    "email": "12321asifbillah@gmail.com",
+    "phone": "+880 1310541840",
+    "github": "https://github.com/billah10m",
+    "linkedin": "https://www.linkedin.com/in/asif-student-263832242/",
+    "twitter": "https://twitter.com/asifbillah",
+    "status": "Open to AI & Full-Stack Opportunities",
+    "resumeUrl": "/uploads/Updated_CV-1795339344988-600.pdf",
+    "avatar": "/uploads/Meshy_AI_-1795340445143-381.png",
+    "skills": [
+      "Next.js 14",
+      "React.js",
+      "Python",
+      "PyTorch",
+      "Vision-Language AI",
+      "Node.js",
+      "PostgreSQL",
+      "Tailwind CSS"
+    ],
+    "updated_at": "2026-11-22T09:59:51.722Z"
+  },
+  "stats": [
+    {
+      "label": "Academic CGPA",
+      "value": "3.52",
+      "description": "BSc (Hons) in CSE • Daffodil International University"
+    },
+    {
+      "label": "Leadership",
+      "value": "General Secretary",
+      "description": "DIU Computer & Programming Club (DIU-CPC)"
+    },
+    {
+      "label": "Core Projects",
+      "value": "03+",
+      "description": "Campus Gig, Orivo & Medical AI Vision-Language"
+    },
+    {
+      "label": "Workshops & Events",
+      "value": "15+",
+      "description": "National Contests, Hackathons & Tech Seminars"
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "degree": "BSc. in Computer Science and Engineering",
+      "institution": "Daffodil International University (DIU)",
+      "period": "2023 - Present",
+      "cgpa": "3.52 / 4.00",
+      "details": "Specializing in Intelligent Systems, Machine Learning, Deep Learning, Web Engineering, Data Structures & Algorithms, and Distributed Systems, Digital Marketing"
+    }
+  ],
+  "techCategories": [
+    {
+      "id": "all",
+      "label": "All Skills"
+    },
+    {
+      "id": "programming",
+      "label": "Programming Languages"
+    },
+    {
+      "id": "frontend",
+      "label": "Frontend Development"
+    },
+    {
+      "id": "backend",
+      "label": "Backend Development"
+    },
+    {
+      "id": "ai_ml",
+      "label": "AI & Machine Learning"
+    },
+    {
+      "id": "research",
+      "label": "Research & Methodologies"
+    },
+    {
+      "id": "marketing",
+      "label": "Digital Marketing"
+    },
+    {
+      "id": "professional",
+      "label": "Professional Skills"
+    },
+    {
+      "id": "tools",
+      "label": "Tools & Technologies"
+    }
+  ],
+  "techSkills": [
+    {
+      "id": "sk-2",
+      "name": "C ",
+      "category": "programming",
+      "level": "Advanced",
+      "proficiency": 88,
+      "icon": "CodeIcon"
+    },
+    {
+      "id": "sk-3",
+      "name": "JavaScript (ES6+)",
+      "category": "programming",
+      "level": "Expert",
+      "proficiency": 94,
+      "icon": "CodeIcon"
+    },
+    {
+      "id": "sk-5",
+      "name": "MySQL",
+      "category": "backend",
+      "level": "Advanced",
+      "proficiency": 90,
+      "icon": "PostgresIcon"
+    },
+    {
+      "id": "sk-6",
+      "name": "Next.js",
+      "category": "frontend",
+      "level": "Intermediate",
+      "proficiency": 75,
+      "icon": "NextjsIcon"
+    },
+    {
+      "id": "sk-7",
+      "name": "React ",
+      "category": "frontend",
+      "level": "Intermediate",
+      "proficiency": 75,
+      "icon": "ReactIcon"
+    },
+    {
+      "id": "sk-10",
+      "name": "Node.js & Express",
+      "category": "backend",
+      "level": "Intermediate",
+      "proficiency": 77,
+      "icon": "NodeIcon"
+    },
+    {
+      "id": "sk-15",
+      "name": "PyTorch & TorchVision",
+      "category": "ai_ml",
+      "level": "Advanced",
+      "proficiency": 92,
+      "icon": "PytorchIcon"
+    },
+    {
+      "id": "sk-16",
+      "name": "Vision-Language Models",
+      "category": "ai_ml",
+      "level": "Advanced",
+      "proficiency": 90,
+      "icon": "BrainIcon"
+    },
+    {
+      "id": "sk-17",
+      "name": "Deep Learning (CNN & Transformers)",
+      "category": "ai_ml",
+      "level": "Advanced",
+      "proficiency": 93,
+      "icon": "CpuIcon"
+    },
+    {
+      "id": "sk-20",
+      "name": "Medical Imaging & CT Analysis",
+      "category": "research",
+      "level": "Advanced",
+      "proficiency": 90,
+      "icon": "BookOpenIcon"
+    },
+    {
+      "id": "sk-21",
+      "name": "Explainable AI (Grad-CAM)",
+      "category": "research",
+      "level": "Advanced",
+      "proficiency": 88,
+      "icon": "BrainIcon"
+    },
+    {
+      "id": "sk-23",
+      "name": "SEO & Content Architecture",
+      "category": "marketing",
+      "level": "Advanced",
+      "proficiency": 88,
+      "icon": "BarChartIcon"
+    },
+    {
+      "id": "sk-24",
+      "name": "Web Analytics & Conversion Rate",
+      "category": "marketing",
+      "level": "Advanced",
+      "proficiency": 85,
+      "icon": "BarChartIcon"
+    },
+    {
+      "id": "sk-25",
+      "name": "Club Leadership & Governance",
+      "category": "professional",
+      "level": "Expert",
+      "proficiency": 98,
+      "icon": "AwardIcon"
+    },
+    {
+      "id": "sk-26",
+      "name": "Event Management & Operations",
+      "category": "professional",
+      "level": "Expert",
+      "proficiency": 96,
+      "icon": "AwardIcon"
+    },
+    {
+      "id": "sk-27",
+      "name": "Git & GitHub Collaboration",
+      "category": "tools",
+      "level": "Expert",
+      "proficiency": 95,
+      "icon": "GithubIcon"
+    },
+    {
+      "id": "sk-28",
+      "name": "Digital Marketing (Social media and email marketing)",
+      "category": "marketing",
+      "level": "Expert",
+      "proficiency": 90,
+      "icon": "DockerIcon"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "title": "Campus Gig — Collegiate Microjobs & Freelance Ecosystem",
+      "category": "Full-Stack Web App",
+      "description": "A specialized university marketplace connecting students with campus tasks, technical microjobs, skill exchanges, and instant digital payments.",
+      "longDesc": "Campus Gig is a comprehensive collegiate task and micro-economy platform designed to empower university students. It features student identity verification, gig escrow mechanisms, automated transaction records, real-time messaging, and multi-filter discovery for on-campus opportunities.",
+      "tech": [
+        "Next.js 14",
+        "React 18",
+        "Node.js",
+        "Express",
+        "PostgreSQL",
+        "Tailwind CSS",
+        "WebSockets"
+      ],
+      "image": "/uploads/Screenshot_2026-11-22_132544-1795332397099-22.png",
+      "gallery": [],
+      "liveUrl": "https://campusgig-demo.vercel.app",
+      "githubUrl": "https://github.com/asifbillah/campus-gig",
+      "metrics": "500+ Student Users • 99.8% Escrow Reliability",
+      "time": "2024",
+      "featured": true,
+      "longdesc": "Campus Gig is a comprehensive collegiate task and micro-economy platform designed to empower university students. It features student identity verification, gig escrow mechanisms, automated transaction records, real-time messaging, and multi-filter discovery for on-campus opportunities.",
+      "githuburl": "https://github.com/asifbillah/campus-gig",
+      "liveurl": "https://campusgig-demo.vercel.app",
+      "status": "LIVE DEMO"
+    },
+    {
+      "id": "proj-2",
+      "title": "Orivo — Enterprise E-Commerce & Marketing Automation Platform",
+      "category": "Full-Stack Web App",
+      "description": "Next-generation digital commerce platform integrating intelligent marketing analytics, automated customer notifications, and streamlined product catalogs.",
+      "longDesc": "High-concurrency e-commerce architecture designed with sub-second page delivery, serverless payment checkouts, dynamic inventory tracking, and targeted marketing automation workflows for modern growing retail businesses.",
+      "tech": [
+        "Next.js 14",
+        "TypeScript",
+        "Tailwind CSS",
+        "Node.js",
+        "Redis",
+        "PostgreSQL",
+        "BullMQ"
+      ],
+      "image": "/orivo.jpeg",
+      "gallery": [
+        "/orivo.jpeg",
+        "/tech2.JPG"
+      ],
+      "liveUrl": "https://orivo-demo.vercel.app",
+      "githubUrl": "https://github.com/asifbillah/orivo-commerce",
+      "metrics": "10k+ Monthly Visits • 99.9% Uptime",
+      "time": "2024",
+      "featured": true
+    }
+  ],
+  "researchPapers": [
+    {
+      "id": "paper-1",
+      "title": "Explainable Multi-Label Brain CT Findings Detection and Report Generation Using Vision-Language Learning",
+      "domain": "Medical AI & Vision-Language 🧠",
+      "mlTech": "Vision-Language Models / Transformer-CNN Hybrid",
+      "venue": "IEEE International Conference on Bioinformatics and Biomedicine (BIBM 2026 / Under Review)",
+      "year": 2026,
+      "hardware": "NVIDIA RTX 4090 / PyTorch CUDA",
+      "metrics": "96.4% AUC • Grad-CAM Heatmaps • 0.88 BLEU-4",
+      "abstract": "We propose an end-to-end explainable vision-language diagnostic framework for multi-label cranial CT scans. Combining 3D slice attention networks with a cross-modal transformer decoder, the model detects acute hemorrhages, ischemic changes, and skull fractures while generating human-readable radiology findings alongside visual Grad-CAM attribution heatmaps.",
+      "doi": "10.1109/BIBM.2024.10842",
+      "citation": "Billah, A. et al. (2026). Explainable Multi-Label Brain CT Findings Detection and Report Generation Using Vision-Language Learning. IEEE BIBM.",
+      "status": "Research in Progress / Manuscript Under Review",
+      "img": "/uploads/Screenshot_2026-11-22_133128-1795332820446-413.png",
+      "pdfUrl": "/Asif_Billah_CV.pdf",
+      "mltech": "Vision-Language Models / Transformer-CNN Hybrid",
+      "pdfurl": "/Asif_Billah_CV.pdf"
+    }
+  ],
+  "experiences": [],
+  "activities": [
+    {
+      "id": "act-1",
+      "title": "DIU CPC Intra University Programming Contests",
+      "category": "University Events",
+      "role": "General Secretary & Lead Organizer",
+      "year": "2025 - 2026",
+      "desc": "Organized and supervised the flagship freshmen programming tournament at Daffodil International University, handling live scoring arenas and contest problem testing.",
+      "img": "/uploads/676468343_1405826174918320_663414475001312977_n-1795338765220-207.jpg",
+      "gallery": [],
+      "impact": "500+ Freshmen Competitors • 8 Problem Arena Sets",
+      "stat": "500+ Competitors",
+      "tag": "Competitive Programming",
+      "location": "Daffodil Smart City, Ashulia, Dhaka",
+      "link": "https://facebook.com/diucpc",
+      "images": [],
+      "description": "Organized and supervised the flagship freshmen programming tournament at Daffodil International University, handling live scoring arenas and contest problem testing."
+    },
+    {
+      "id": "act-3",
+      "title": "ICPC Asia Dhaka Regional Contest Operations",
+      "category": "National Events",
+      "role": "Operations & Technical Lead",
+      "year": "2024",
+      "desc": "Coordinated arena networking, volunteer logistics, and contestant platform setup for over 300 university teams competing across Bangladesh.",
+      "img": "/uploads/DSC01583_JPG-1795338801098-489.jpg",
+      "gallery": [],
+      "impact": "300+ University Teams • Zero-Downtime Arena",
+      "stat": "300+ Teams",
+      "tag": "National Arena",
+      "location": "Daffodil Smart City, Ashulia, Dhaka",
+      "link": "https://icpc.global",
+      "images": [],
+      "description": "Coordinated arena networking, volunteer logistics, and contestant platform setup for over 300 university teams competing across Bangladesh."
+    },
+    {
+      "id": "act-4",
+      "title": "AI  DEV  FEST 2026",
+      "category": "National Events",
+      "role": "Event  Lead",
+      "year": "2026",
+      "desc": "Managing all the segments and lead the team to make the event fullfill",
+      "img": "/uploads/843840805_1432052002216361_2460671522703825036_n-1795338912587-392.jpg",
+      "gallery": [],
+      "impact": "4 segment along with 1300+ participants from around 67 Universities",
+      "stat": "Top Finalist",
+      "tag": "Hackathon",
+      "location": "Dhaka, Bangladesh",
+      "link": "https://smartbangladesh.gov.bd",
+      "images": [],
+      "description": "Managing all the segments and lead the team to make the event fullfill"
+    }
+  ],
+  "websiteSettings": {
+    "title": "Asif Billah | Software Developer & AI Researcher | General Secretary, DIU-CPC",
+    "subtitle": "Personal Portfolio & Engineering Showcase",
+    "logo": "AB",
+    "favicon": "/favicon.svg",
+    "footerText": "Crafted by Asif Billah. General Secretary, DIU-CPC • Daffodil International University.",
+    "seoTitle": "Asif Billah — Software Developer & AI Researcher",
+    "seoDescription": "Portfolio of Asif Billah: Software Developer, AI Researcher, and General Secretary of DIU Computer & Programming Club (DIU-CPC). Discover Campus Gig, Orivo, Brain CT AI research, and technical leadership.",
+    "socialPreviewImage": "/tech1.jpg",
+    "cvDownloadFile": "/Asif_Billah_CV.pdf",
+    "showExperience": false
+  }
+}

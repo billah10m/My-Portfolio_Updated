@@ -1,0 +1,893 @@
+'use client';
+
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Award, 
+  Globe, 
+  Building, 
+  Flag, 
+  LayoutGrid, 
+  Layers,
+  X, 
+  ChevronRight, 
+  ChevronLeft, 
+  Calendar, 
+  TrendingUp, 
+  ShieldCheck, 
+  ArrowUpRight,
+  MousePointerClick,
+  Play,
+  Pause,
+  Zap,
+  Activity,
+  Images
+} from 'lucide-react';
+import SectionWrapper from './SectionWrapper';
+import SectionHeader from './SectionHeader';
+
+const fallbackActivities = [
+  {
+    id: "act-1",
+    title: "DIU CPC Take-Off Programming Contest",
+    category: "University Events",
+    role: "General Secretary & Lead Organizer",
+    year: "2023 - 2024",
+    desc: "Organized and supervised the flagship freshmen programming tournament at Daffodil International University, handling live scoring arenas and contest problem testing.",
+    img: "/cpc2.jpg",
+    impact: "500+ Freshmen Competitors • 8 Problem Arena Sets",
+    stat: "500+ Competitors",
+    tag: "Competitive Programming",
+    location: "Daffodil Smart City, Ashulia, Dhaka",
+    link: "https://facebook.com/diucpc"
+  },
+  {
+    id: "act-2",
+    title: "ICPC Asia Dhaka Regional Contest Operations",
+    category: "National Events",
+    role: "Operations & Technical Lead",
+    year: "2024",
+    desc: "Coordinated arena networking, volunteer logistics, and contestant platform setup for over 300 university teams competing across Bangladesh.",
+    img: "/icpc1.jpg",
+    impact: "300+ University Teams • Zero-Downtime Arena",
+    stat: "300+ Teams",
+    tag: "National Arena",
+    location: "Daffodil Smart City, Ashulia, Dhaka",
+    link: "https://icpc.global"
+  },
+  {
+    id: "act-3",
+    title: "National Smart Bangladesh Hackathon",
+    category: "National Events",
+    role: "Team Lead & Solutions Architect",
+    year: "2023",
+    desc: "Engineered an AI-powered smart community resource allocation portal, presenting to academic and industry judges.",
+    img: "/cpc1.jpg",
+    impact: "Top Finalist Team • Smart Campus Innovation",
+    stat: "Top Finalist",
+    tag: "Hackathon",
+    location: "Dhaka, Bangladesh",
+    link: "https://smartbangladesh.gov.bd"
+  }
+];
+
+const categories = [
+  { id: "All", label: "All", icon: LayoutGrid },
+  { id: "University Events", label: "University", icon: Building },
+  { id: "National Events", label: "National", icon: Flag },
+  { id: "International Events", label: "International", icon: Globe }
+];
+
+const categoryIcons = {
+  "All": LayoutGrid,
+  "University Events": Building,
+  "National Events": Flag,
+  "International Events": Globe
+};
+
+export default function Activities({ activities = fallbackActivities }) {
+  const list = Array.isArray(activities) && activities.length > 0 ? activities : fallbackActivities;
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [isPlayingTour, setIsPlayingTour] = useState(false);
+  const [inspectedAct, setInspectedAct] = useState(null);
+  const [modalPhotoIdx, setModalPhotoIdx] = useState(0);
+
+  // Helper to extract all images for an activity
+  const getActImages = (act) => {
+    if (!act) return [];
+    const imgs = [];
+    if (act.img) imgs.push(act.img);
+    if (act.image && !imgs.includes(act.image)) imgs.push(act.image);
+    if (Array.isArray(act.gallery)) {
+      act.gallery.forEach(u => { if (u && !imgs.includes(u)) imgs.push(u); });
+    } else if (typeof act.gallery === 'string') {
+      act.gallery.split('\n').map(s => s.trim()).forEach(u => { if (u && !imgs.includes(u)) imgs.push(u); });
+    }
+    if (Array.isArray(act.images)) {
+      act.images.forEach(u => { if (u && !imgs.includes(u)) imgs.push(u); });
+    }
+    return imgs.length > 0 ? imgs : ['/cpc1.jpg'];
+  };
+
+  // 3D Parallax Tilt for Spotlight Card (GPU Accelerated)
+  const cardRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `perspective(1000px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg)`;
+  };
+
+  const handleMouseLeave = () => {
+    const card = cardRef.current;
+    if (card) {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    }
+  };
+
+  const filteredActivities = activeCategory === "All"
+    ? list
+    : list.filter(act => {
+        const cat = act.category || "";
+        return cat.toLowerCase().includes(activeCategory.toLowerCase().replace(" events", ""));
+      });
+
+  const total = filteredActivities.length;
+  const activeAct = filteredActivities[currentIndex] || filteredActivities[0] || list[0];
+  const ActiveIcon = categoryIcons[activeAct?.category] || Award;
+
+  const handleNext = useCallback(() => {
+    if (total <= 1) return;
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % total);
+  }, [total]);
+
+  const handlePrev = useCallback(() => {
+    if (total <= 1) return;
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + total) % total);
+  }, [total]);
+
+  // Expedition Stream Rail Ref & Drag-to-Scroll State
+  const railRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftState, setScrollLeftState] = useState(0);
+  const [dragMoved, setDragMoved] = useState(false);
+
+  const handleSelectIndex = (idx) => {
+    if (idx === currentIndex) return;
+    setDirection(idx > currentIndex ? 1 : -1);
+    setCurrentIndex(idx);
+  };
+
+  // Reset index and rail position when category filter changes
+  useEffect(() => {
+    setCurrentIndex(0);
+    if (railRef.current) {
+      railRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  }, [activeCategory]);
+
+  // Native non-passive Wheel listener to guarantee horizontal scroll with any mouse
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    const handleWheelNative = (e) => {
+      if (rail.scrollWidth > rail.clientWidth) {
+        // Only scroll the horizontal rail if horizontal scrolling is dominant or Shift key is pressed
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) {
+          e.preventDefault();
+          rail.scrollLeft += (e.deltaX || e.deltaY) * 1.2;
+        }
+      }
+    };
+
+    rail.addEventListener('wheel', handleWheelNative, { passive: false });
+    return () => {
+      rail.removeEventListener('wheel', handleWheelNative);
+    };
+  }, [filteredActivities.length]);
+
+  // HTML5 Pointer Drag-to-Scroll Handlers (Works on Mouse & Touch without losing focus)
+  const handlePointerDown = (e) => {
+    if (!railRef.current) return;
+    setIsDragging(true);
+    setDragMoved(false);
+    setStartX(e.clientX);
+    setScrollLeftState(railRef.current.scrollLeft);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging || !railRef.current) return;
+    const delta = e.clientX - startX;
+    if (Math.abs(delta) > 5) {
+      setDragMoved(true);
+      railRef.current.scrollLeft = scrollLeftState - delta * 1.5;
+    }
+  };
+
+  const handlePointerUp = () => {
+    setIsDragging(false);
+  };
+
+  const scrollRail = (dir) => {
+    if (railRef.current) {
+      railRef.current.scrollBy({ left: dir * 260, behavior: 'smooth' });
+    }
+  };
+
+  // Autoplay Tour
+  useEffect(() => {
+    if (!isPlayingTour || total <= 1) return;
+    const interval = setInterval(handleNext, 4200);
+    return () => clearInterval(interval);
+  }, [isPlayingTour, handleNext, total]);
+
+  // Clean 3D Stage Transition Variants
+  const stageVariants = {
+    enter: (dir) => ({
+      x: dir > 0 ? '50%' : '-50%',
+      rotateY: dir > 0 ? 15 : -15,
+      scale: 0.94,
+      opacity: 0,
+    }),
+    center: {
+      x: '0%',
+      rotateY: 0,
+      scale: 1,
+      opacity: 1,
+      transition: {
+        x: { type: "spring", stiffness: 280, damping: 26 },
+        rotateY: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+        scale: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
+        opacity: { duration: 0.22 }
+      }
+    },
+    exit: (dir) => ({
+      x: dir > 0 ? '-50%' : '50%',
+      rotateY: dir > 0 ? -15 : 15,
+      scale: 0.94,
+      opacity: 0,
+      transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+    })
+  };
+
+  return (
+    <SectionWrapper id="activities" variant="flip-left">
+      <div className="w-full relative z-10" style={{ maxWidth: 'var(--container-inner)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--gap-md)' }}>
+        
+        {/* Section Header */}
+        <SectionHeader
+          number="07"
+          category="Leadership & Events"
+          title="Extracurricular &"
+          highlight="Leadership"
+        />
+
+        {/* 🎛️ SPACE-OPTIMIZED CATEGORY FILTER PILLS & INLINE CONTROLS */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 w-full" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {categories.map((cat) => {
+              const count = cat.id === 'All'
+                ? list.length
+                : list.filter(a => (a.category || '').toLowerCase().includes(cat.label.toLowerCase())).length;
+
+              const Icon = cat.icon;
+              const isActive = activeCategory === cat.id;
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl text-xs md:text-sm font-mono font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer select-none shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap"
+                  style={{
+                    background: isActive ? 'var(--color-accent)' : 'var(--color-surface-2)',
+                    color: isActive ? '#000' : 'var(--color-text-muted)',
+                    border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                    boxShadow: isActive ? '0 0 15px rgba(56, 189, 248, 0.35)' : 'none',
+                  }}
+                >
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>{cat.label}</span>
+                  <span 
+                    className="text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full font-bold"
+                    style={{
+                      background: isActive ? 'rgba(0,0,0,0.2)' : 'var(--color-surface)',
+                      color: isActive ? '#000' : 'var(--color-accent)',
+                      border: isActive ? 'none' : '1px solid var(--color-border)',
+                    }}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Compact Inline Autoplay Tour & Arrows */}
+          <div className="flex items-center gap-1.5 font-mono flex-shrink-0">
+            <button
+              onClick={() => setIsPlayingTour(!isPlayingTour)}
+              className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap"
+              style={{
+                background: isPlayingTour ? 'var(--color-accent)' : 'var(--color-surface-2)',
+                color: isPlayingTour ? '#000' : 'var(--color-text-muted)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              {isPlayingTour ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              <span>{isPlayingTour ? 'Touring' : 'Auto Tour'}</span>
+            </button>
+
+            <button
+              onClick={handlePrev}
+              aria-label="Previous Event"
+              className="p-1.5 sm:p-2 rounded-xl transition-all shadow-sm hover:scale-110 active:scale-90 cursor-pointer"
+              style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+            >
+              <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+
+            <button
+              onClick={handleNext}
+              aria-label="Next Event"
+              className="p-1.5 sm:p-2 rounded-xl transition-all shadow-sm hover:scale-110 active:scale-90 cursor-pointer"
+              style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+            >
+              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* 🌟 3D HOLOGRAPHIC SPOTLIGHT STAGE */}
+        <div className="w-full perspective-[1200px] font-mono overflow-hidden py-0.5">
+          <AnimatePresence custom={direction} mode="wait">
+            {activeAct && (
+              <motion.div
+                key={activeAct.id || currentIndex}
+                custom={direction}
+                variants={stageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                ref={cardRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                  transformStyle: 'preserve-3d',
+                  transition: 'transform 0.15s ease-out',
+                  background: 'var(--color-surface)',
+                  border: '1.5px solid var(--color-border)',
+                }}
+                className="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl relative select-none"
+              >
+                {/* Top Glowing Laser Accent Line */}
+                <div 
+                  className="absolute inset-x-0 top-0 h-[2px] z-30" 
+                  style={{ background: 'linear-gradient(to right, transparent, var(--color-accent), transparent)' }} 
+                />
+
+                {/* 1. Widescreen Banner with Ambient Overlay */}
+                <div className="relative w-full h-36 sm:h-44 md:h-52 lg:h-60 xl:h-64 overflow-hidden bg-black/50 shadow-inner group/banner">
+                  <img
+                    src={activeAct.img || '/tech2.JPG'}
+                    alt={activeAct.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover group-hover/banner:scale-106 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)] via-black/35 to-transparent pointer-events-none" />
+
+                  {/* Top Badges inside Banner */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-20">
+                    <span 
+                      className="text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-lg backdrop-blur-md"
+                      style={{
+                        background: 'rgba(0,0,0,0.65)',
+                        color: 'var(--color-accent)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                      }}
+                    >
+                      <ActiveIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      <span>{activeAct.category || "Event"}</span>
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      {getActImages(activeAct).length > 1 && (
+                        <span 
+                          className="text-[10px] sm:text-xs font-mono font-bold px-2 py-0.5 rounded-full shadow-lg backdrop-blur-md flex items-center gap-1.5"
+                          style={{
+                            background: 'rgba(0,0,0,0.65)',
+                            color: 'var(--color-accent)',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                          }}
+                        >
+                          <Images className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                          <span>{getActImages(activeAct).length} Photos</span>
+                        </span>
+                      )}
+
+                      <span 
+                        className="text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full shadow-lg backdrop-blur-md flex items-center gap-1.5"
+                        style={{
+                          background: 'rgba(0,0,0,0.65)',
+                          color: '#fff',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                        }}
+                      >
+                        <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent" />
+                        <span>{activeAct.year || "2023 - Present"}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Spotlight Body Content */}
+                <div className="p-3 sm:p-4 space-y-2 sm:space-y-2.5 relative z-20 -mt-3 sm:-mt-4">
+                  
+                  {/* Title & Leadership Role */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-1.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <div>
+                      <h3 className="text-sm sm:text-lg md:text-xl font-bold font-sans leading-snug tracking-tight" style={{ color: 'var(--color-text)' }}>
+                        {activeAct.title}
+                      </h3>
+                      <p className="text-xs sm:text-[13px] font-semibold font-sans pt-0.5" style={{ color: 'var(--color-accent)' }}>
+                        {activeAct.role}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+                      {activeAct.tag && (
+                        <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider" style={{ background: 'var(--color-surface-2)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}>
+                          {activeAct.tag}
+                        </span>
+                      )}
+
+                      <span 
+                        className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1 shadow-sm"
+                        style={{ background: 'rgba(34, 197, 94, 0.12)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.25)' }}
+                      >
+                        <ShieldCheck className="w-3 h-3 text-green-400" />
+                        <span>Verified</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Description Excerpt */}
+                  <p className="text-xs sm:text-[13px] leading-relaxed font-sans line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>
+                    {activeAct.desc}
+                  </p>
+
+                  {/* Impact Metric & Inspect Action */}
+                  <div className="pt-1.5 flex flex-wrap items-center justify-between gap-2" style={{ borderTop: '1px solid var(--color-border)' }}>
+                    {activeAct.impact ? (
+                      <div 
+                        className="px-2.5 py-0.5 rounded-xl text-[11px] sm:text-xs font-mono font-bold flex items-center gap-1.5 shadow-inner"
+                        style={{ background: 'rgba(56, 189, 248, 0.1)', color: 'var(--color-accent)', border: '1px solid rgba(56, 189, 248, 0.25)' }}
+                      >
+                        <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                        <span>{activeAct.impact}</span>
+                      </div>
+                    ) : <div />}
+
+                    <button
+                      onClick={() => setInspectedAct(activeAct)}
+                      className="px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer hover:scale-105 active:scale-95"
+                      style={{
+                        background: 'var(--color-accent)',
+                        color: '#000',
+                      }}
+                    >
+                      <span>Inspect Event</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* 🎞️ INTERACTIVE HOLOGRAPHIC EVENT PASS STREAM (DRAG / WHEEL / CLICK SCROLLABLE) */}
+        <div className="space-y-3 font-mono select-none">
+          <div className="flex items-center justify-between text-xs pb-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+              </span>
+              <span className="font-bold">Interactive Expedition Stream:</span>
+              <span className="opacity-75 hidden sm:inline text-[11px]">(Drag, scroll, or click to explore)</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Rail Left/Right Scroll Chevrons */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => scrollRail(-1)}
+                  className="p-1 rounded-lg border text-zinc-400 hover:text-white hover:border-accent transition-colors cursor-pointer"
+                  style={{ background: 'var(--color-surface-2)', borderColor: 'var(--color-border)' }}
+                  aria-label="Scroll left"
+                  title="Scroll Left"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollRail(1)}
+                  className="p-1 rounded-lg border text-zinc-400 hover:text-white hover:border-accent transition-colors cursor-pointer"
+                  style={{ background: 'var(--color-surface-2)', borderColor: 'var(--color-border)' }}
+                  aria-label="Scroll right"
+                  title="Scroll Right"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <span className="text-[11px] px-2 py-0.5 rounded-md font-bold" style={{ background: 'var(--color-surface-2)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}>
+                {currentIndex + 1} / {filteredActivities.length} Selected
+              </span>
+            </div>
+          </div>
+
+          {/* Horizontal Event Cards Stream Container with Left/Right Nav Arrows */}
+          <div className="relative w-full group/rail">
+            {/* Left Nav Arrow Button */}
+            <button
+              type="button"
+              onClick={() => scrollRail(-1)}
+              aria-label="Scroll stream left"
+              className="absolute left-0 sm:left-1 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-2.5 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95 border backdrop-blur-md opacity-90 hover:opacity-100"
+              style={{
+                background: 'rgba(18, 19, 26, 0.9)',
+                borderColor: 'var(--color-border)',
+                color: 'var(--color-accent)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-accent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+
+            {/* Right Nav Arrow Button */}
+            <button
+              type="button"
+              onClick={() => scrollRail(1)}
+              aria-label="Scroll stream right"
+              className="absolute right-0 sm:right-1 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-2.5 rounded-2xl shadow-xl transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95 border backdrop-blur-md opacity-90 hover:opacity-100"
+              style={{
+                background: 'rgba(18, 19, 26, 0.9)',
+                borderColor: 'var(--color-border)',
+                color: 'var(--color-accent)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-accent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+
+            {/* Horizontal Event Cards Rail */}
+            <div 
+              ref={railRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              className="flex items-stretch gap-3.5 overflow-x-auto pb-2.5 pt-1 px-8 sm:px-10 custom-scrollbar"
+              style={{ 
+                cursor: isDragging ? 'grabbing' : 'grab',
+                scrollbarWidth: 'none', 
+                msOverflowStyle: 'none',
+                touchAction: 'pan-y',
+                userSelect: 'none'
+              }}
+            >
+            {filteredActivities.map((act, idx) => {
+              const isSelected = idx === currentIndex;
+              const Icon = categoryIcons[act.category] || Award;
+
+              return (
+                <div
+                  key={act.id || idx}
+                  onClick={() => handleSelectIndex(idx)}
+                  onMouseEnter={() => {
+                    handleSelectIndex(idx);
+                    setIsPlayingTour(false);
+                  }}
+                  className="w-44 sm:w-52 md:w-56 lg:w-60 xl:w-64 p-2 sm:p-2.5 md:p-3 rounded-2xl text-left transition-all duration-300 flex-shrink-0 cursor-pointer shadow-sm relative flex flex-col justify-between group hover:-translate-y-1 select-none"
+                  style={{
+                    background: isSelected ? 'var(--color-surface-2)' : 'var(--color-surface)',
+                    border: isSelected ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                    boxShadow: isSelected 
+                      ? '0 0 25px rgba(56, 189, 248, 0.4), 0 10px 25px rgba(0,0,0,0.3)' 
+                      : '0 4px 12px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  {/* Top Laser Beam on Active Card */}
+                  {isSelected && (
+                    <div 
+                      className="absolute inset-x-0 top-0 h-[2.5px] z-30" 
+                      style={{ background: 'linear-gradient(to right, transparent, var(--color-accent), transparent)' }} 
+                    />
+                  )}
+
+                  {/* Thumbnail Image Banner */}
+                  <div className="w-full h-20 sm:h-22 md:h-24 lg:h-28 rounded-xl overflow-hidden bg-black/40 relative shadow-inner mb-1.5 flex-shrink-0 pointer-events-none">
+                    <img
+                      src={act.img || '/tech2.JPG'}
+                      alt={act.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+
+                    {/* Top-Left Category Badge */}
+                    <div className="absolute top-1 left-1 text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/75 text-accent border border-accent/30 flex items-center gap-1 backdrop-blur-sm">
+                      <Icon className="w-2.5 h-2.5" />
+                      <span className="truncate max-w-[70px]">{act.category?.replace(" Events", "") || "Event"}</span>
+                    </div>
+
+                    {/* Top-Right Year Pill */}
+                    <div className="absolute top-1 right-1 text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/75 text-white/90 border border-white/10 backdrop-blur-sm">
+                      {act.year?.slice(0, 4) || "2023"}
+                    </div>
+
+                    {/* Bottom-Left Index & Waveform Indicator */}
+                    <div className="absolute bottom-1 left-1 right-1 flex items-center justify-between z-10">
+                      <span className="text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/80 text-white font-mono border border-white/15">
+                        PASS #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                      </span>
+
+                      {/* Equalizer Waveform when Active */}
+                      {isSelected ? (
+                        <div className="flex items-end gap-0.5 h-2.5 px-1 py-0.5 rounded bg-accent/20 border border-accent/40">
+                          <span className="w-0.5 h-1.5 bg-accent animate-pulse" />
+                          <span className="w-0.5 h-2.5 bg-accent animate-bounce" />
+                          <span className="w-0.5 h-1 bg-accent animate-pulse" />
+                          <span className="w-0.5 h-2 bg-accent animate-bounce" />
+                        </div>
+                      ) : (
+                        <span className="text-[8px] sm:text-[9px] font-mono text-zinc-400 opacity-80 group-hover:text-accent transition-colors">
+                          View &rarr;
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Content (Clean 2-line title wrapping, no clipping) */}
+                  <div className="space-y-0.5 flex-1 flex flex-col justify-between pointer-events-none">
+                    <div>
+                      <h4 className="text-[11px] sm:text-xs font-bold font-sans line-clamp-2 leading-tight tracking-tight min-h-[28px]" style={{ color: isSelected ? '#fff' : 'var(--color-text)' }}>
+                        {act.title}
+                      </h4>
+                      <p className="text-[10px] sm:text-[11px] font-semibold truncate pt-0.5" style={{ color: 'var(--color-accent)' }}>
+                        {act.role}
+                      </p>
+                    </div>
+
+                    {/* Key Metric Badge */}
+                    {act.stat && (
+                      <div className="pt-1 mt-1 border-t flex items-center justify-between text-[9px] sm:text-[10px]" style={{ borderColor: 'var(--color-border)' }}>
+                        <span className="text-zinc-400 uppercase tracking-wider">Impact:</span>
+                        <span className="font-bold text-accent truncate max-w-[100px]">{act.stat}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            </div>
+          </div>
+
+          {/* 🎚️ Interactive Laser Progress Scrub Bar (Click to Scrub) */}
+          <div 
+            className="w-full pt-1 cursor-pointer"
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const clickX = e.clientX - rect.left;
+              const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+              const targetIdx = Math.min(filteredActivities.length - 1, Math.floor(ratio * filteredActivities.length));
+              handleSelectIndex(targetIdx);
+            }}
+          >
+            <div className="w-full h-2 rounded-full overflow-hidden relative shadow-inner" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}>
+              <div 
+                className="h-full rounded-full transition-all duration-300"
+                style={{ 
+                  width: `${((currentIndex + 1) / filteredActivities.length) * 100}%`,
+                  background: 'linear-gradient(to right, #0284c7, var(--color-accent))',
+                  boxShadow: '0 0 10px var(--color-accent)'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Event Inspection Spec Modal Drawer */}
+      <AnimatePresence>
+        {inspectedAct && (() => {
+          const modalImages = getActImages(inspectedAct);
+          const activePhoto = modalImages[modalPhotoIdx] || modalImages[0] || inspectedAct.img || '/tech2.JPG';
+
+          return (
+            <div 
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xl" 
+              style={{ background: 'rgba(0,0,0,0.75)' }}
+              onClick={() => setInspectedAct(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-2xl rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden font-mono shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
+                style={{
+                  border: '1px solid var(--color-border)',
+                  background: 'var(--color-surface)',
+                }}
+              >
+                {/* Top Holographic Accent Line */}
+                <div 
+                  className="absolute inset-x-0 top-0 h-[2px]" 
+                  style={{ background: 'linear-gradient(to right, transparent, var(--color-accent), transparent)' }} 
+                />
+
+                <button
+                  onClick={() => setInspectedAct(null)}
+                  className="absolute top-4 right-4 p-2 rounded-full hover:opacity-85 transition-opacity cursor-pointer shadow-md z-30"
+                  style={{
+                    background: 'var(--color-surface-2)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text)',
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {/* Event Multi-Image Banner & Gallery Viewer */}
+                <div className="space-y-2">
+                  <div className="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden bg-black/50 shadow-inner group" style={{ border: '1px solid var(--color-border)' }}>
+                    <img 
+                      src={activePhoto} 
+                      alt={`${inspectedAct.title} photo ${modalPhotoIdx + 1}`} 
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-all duration-300" 
+                    />
+
+                    {/* Multi-Photo Counter Badge */}
+                    {modalImages.length > 1 && (
+                      <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold font-mono shadow-md backdrop-blur-md flex items-center gap-1.5" style={{ background: 'rgba(0,0,0,0.7)', color: 'var(--color-accent)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                        <Images className="w-3.5 h-3.5" />
+                        <span>{modalPhotoIdx + 1} / {modalImages.length} Photos</span>
+                      </div>
+                    )}
+
+                    {/* Prev / Next Photo Overlay Buttons */}
+                    {modalImages.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalPhotoIdx((prev) => (prev - 1 + modalImages.length) % modalImages.length);
+                          }}
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 shadow-lg cursor-pointer transition-transform active:scale-90"
+                          aria-label="Previous photo"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalPhotoIdx((prev) => (prev + 1) % modalImages.length);
+                          }}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 shadow-lg cursor-pointer transition-transform active:scale-90"
+                          aria-label="Next photo"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Horizontal Thumbnail Strip Preview */}
+                  {modalImages.length > 1 && (
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                      {modalImages.map((imgUrl, i) => {
+                        const isCurrentPhoto = i === modalPhotoIdx;
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setModalPhotoIdx(i)}
+                            className="relative w-16 h-12 rounded-xl overflow-hidden flex-shrink-0 transition-all duration-200 cursor-pointer shadow-sm"
+                            style={{
+                              border: isCurrentPhoto ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                              opacity: isCurrentPhoto ? 1 : 0.6,
+                              transform: isCurrentPhoto ? 'scale(1.05)' : 'scale(1)',
+                              boxShadow: isCurrentPhoto ? '0 0 10px var(--color-accent)' : 'none'
+                            }}
+                          >
+                            <img src={imgUrl} alt={`Thumbnail ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs px-3 py-1 rounded-full font-bold shadow-sm" style={{ background: 'var(--color-surface-2)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}>
+                      {inspectedAct.category}
+                    </span>
+                    <span className="text-xs font-mono" style={{ color: 'var(--color-text-muted)' }}>
+                      Tenure: {inspectedAct.year || "2023 - Present"}
+                    </span>
+                    {inspectedAct.tag && (
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase" style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
+                        {inspectedAct.tag}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-bold leading-snug font-sans" style={{ color: 'var(--color-text)' }}>
+                      {inspectedAct.title}
+                    </h2>
+                    <p className="text-xs font-semibold font-sans pt-0.5" style={{ color: 'var(--color-accent)' }}>
+                      Role: {inspectedAct.role}
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl space-y-1 shadow-sm" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderLeft: '4px solid var(--color-accent)' }}>
+                    <span className="text-xs font-bold block" style={{ color: 'var(--color-accent)' }}>FULL EVENT DETAILS & IMPACT:</span>
+                    <p className="text-xs leading-relaxed font-sans" style={{ color: 'var(--color-text-muted)' }}>
+                      {inspectedAct.desc || inspectedAct.description}
+                    </p>
+                  </div>
+
+                  {inspectedAct.impact && (
+                    <div className="p-3 rounded-xl text-xs flex items-center gap-2 shadow-inner" style={{ background: 'rgba(56, 189, 248, 0.1)', color: 'var(--color-accent)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+                      <TrendingUp className="w-4 h-4 flex-shrink-0" />
+                      <span className="font-bold">{inspectedAct.impact}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-3 flex justify-end gap-2" style={{ borderTop: '1px solid var(--color-border)' }}>
+                  <button
+                    onClick={() => setInspectedAct(null)}
+                    className="px-5 py-2 rounded-xl font-bold text-xs hover:opacity-90 transition-all cursor-pointer shadow-md"
+                    style={{
+                      background: 'var(--color-accent)',
+                      color: '#000',
+                    }}
+                  >
+                    Close Inspection
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          );
+        })()}
+      </AnimatePresence>
+
+    </SectionWrapper>
+  );
+}

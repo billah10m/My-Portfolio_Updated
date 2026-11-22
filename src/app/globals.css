@@ -1,0 +1,336 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import './animations.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   DESIGN TOKEN SYSTEM — DARK MODE (DEFAULT)
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --color-bg:          #080910;
+  --color-surface:     #111217;
+  --color-surface-2:   #16171f;
+  --color-surface-3:   #0a0b10;
+
+  /* Typography */
+  --color-text:        #f0ece3;
+  --color-text-muted:  #9a9590;
+  --color-text-faint:  #5e5a55;
+
+  /* Accent */
+  --color-accent:      #38bdf8;
+  --color-accent-dark: #0284c7;
+  --color-accent-glow: rgba(56, 189, 248, 0.20);
+
+  /* Borders — more visible for card depth */
+  --color-border:        rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.13);
+  --color-border-accent: rgba(56, 189, 248, 0.45);
+
+  /* Glass */
+  --glass-bg:          rgba(17, 18, 23, 0.78);
+  --glass-bg-hover:    rgba(22, 23, 31, 0.92);
+  --glass-panel-bg:    rgba(10, 11, 16, 0.60);
+
+  /* ── FLUID TYPOGRAPHY: scales smoothly from 320px → 1920px ── */
+  /* clamp(min, preferred, max) — preferred is a vw-based interpolation */
+  --text-xs:    clamp(0.65rem,  0.6rem  + 0.25vw,  0.8rem);
+  --text-sm:    clamp(0.75rem,  0.7rem  + 0.35vw,  0.9375rem);
+  --text-base:  clamp(0.875rem, 0.8rem  + 0.45vw,  1.0625rem);
+  --text-lg:    clamp(1rem,     0.9rem  + 0.55vw,  1.25rem);
+  --text-xl:    clamp(1.125rem, 1rem    + 0.65vw,  1.5rem);
+  --text-2xl:   clamp(1.25rem,  1.1rem  + 0.8vw,   1.875rem);
+  --text-3xl:   clamp(1.5rem,   1.2rem  + 1.2vw,   2.5rem);
+  --text-4xl:   clamp(1.875rem, 1.4rem  + 1.8vw,   3.25rem);
+  --text-5xl:   clamp(2.25rem,  1.6rem  + 2.4vw,   4rem);
+
+  /* ── FLUID SPACING: section padding, card padding, gaps ── */
+  --section-px:       clamp(1.25rem, 5vw, 5.5rem);    /* generous horizontal page gutters for both laptops and wide screens */
+  --section-py:       clamp(3rem,    5vw, 6.5rem);    /* balanced vertical section padding */
+  --card-p:           clamp(0.875rem, 1.5vw, 1.75rem); /* card inner padding */
+  --card-p-sm:        clamp(0.625rem, 1vw, 1.125rem); /* smaller card padding */
+  --gap-sm:           clamp(0.5rem,  1vw,    0.875rem); /* small gaps */
+  --gap-md:           clamp(0.75rem, 1.5vw,  1.25rem);  /* medium gaps */
+  --gap-lg:           clamp(1rem,    2vw,    1.75rem);  /* large gaps */
+
+  /* ── FLUID CONTAINER WIDTHS: consistent across all laptop and monitor screens ── */
+  --container-max:    min(76rem, 88vw);   /* optimal reading & card width with healthy breathing room */
+  --container-inner:  min(72rem, 86vw);   /* unified inner width across all sections (~1150px max, 86vw on laptop) */
+  --container-narrow: min(56rem, 82vw);   /* focused single-column presentations */
+}
+
+/* ============================================================
+   DESIGN TOKEN SYSTEM — LIGHT MODE
+   ============================================================ */
+html.light {
+  /* Backgrounds */
+  --color-bg:          #f0f4f8;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1f5f9;
+  --color-surface-3:   #e8edf2;
+
+  /* Typography */
+  --color-text:        #0f172a;
+  --color-text-muted:  #475569;
+  --color-text-faint:  #94a3b8;
+
+  /* Accent */
+  --color-accent:      #0284c7;
+  --color-accent-dark: #0369a1;
+
+  /* Borders */
+  --color-border:      rgba(15, 23, 42, 0.12);
+  --color-border-accent: rgba(2, 132, 199, 0.45);
+
+  /* Glass */
+  --glass-bg:          rgba(255, 255, 255, 0.80);
+  --glass-bg-hover:    rgba(255, 255, 255, 0.96);
+  --glass-panel-bg:    rgba(255, 255, 255, 0.65);
+}
+
+/* ============================================================
+   BASE STYLES & ZERO HORIZONTAL OVERFLOW
+   ============================================================ */
+html { 
+  scroll-padding-top: 5rem;
+  overflow-x: clip; 
+  max-width: 100%;
+  width: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  /* Prevent elements from creating unintentional horizontal overflow */
+  min-width: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: clip;
+  min-height: 100%;
+  max-width: 100%;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
+  /* scrollbar-gutter causes layout shift on mobile — only apply on wide screens */
+  scrollbar-gutter: stable;
+  /* Prevents text from overflowing containers on small screens */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Ambient radial glow (dark) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(56,189,248,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(56,189,248,0.04) 0%, transparent 45%);
+  pointer-events: none;
+  z-index: -1;
+  /* NOTE: NO will-change or transform here — fixed pseudo-elements with
+     will-change:transform create a new stacking context that breaks
+     position:sticky children and causes mobile overflow artifacts. */
+  transition: opacity 0.35s ease;
+}
+
+/* Ambient radial glow (light) */
+html.light body::before {
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(2,132,199,0.09) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(2,132,199,0.06) 0%, transparent 45%);
+}
+
+/* ============================================================
+   REUSABLE COMPONENT CLASSES (use CSS variables)
+   ============================================================ */
+
+/* Frosted Glass Panel */
+.glass-panel {
+  background: var(--glass-panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Frosted Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-border);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--color-border-accent);
+  transform: translateY(-2px);
+}
+
+/* Ghost Button */
+.glass-button {
+  background: transparent;
+  border: 1px solid var(--color-border-strong, rgba(255,255,255,0.13));
+  color: var(--color-text);
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+}
+.glass-button:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #000;
+  box-shadow: 0 0 18px var(--color-accent-glow, rgba(56,189,248,0.25));
+}
+html.light .glass-button:hover {
+  color: #fff;
+}
+
+/* Semantic colour tokens as utilities */
+.bg-theme          { background-color: var(--color-bg); }
+.bg-surface        { background-color: var(--color-surface); }
+.bg-surface-2      { background-color: var(--color-surface-2); }
+.bg-surface-3      { background-color: var(--color-surface-3); }
+.text-primary      { color: var(--color-text); }
+.text-muted        { color: var(--color-text-muted); }
+.text-faint        { color: var(--color-text-faint); }
+.text-accent       { color: var(--color-accent); }
+.border-theme      { border-color: var(--color-border); }
+.border-accent     { border-color: var(--color-border-accent); }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar          { width: 5px; }
+::-webkit-scrollbar-track    { background: var(--color-surface-3); }
+::-webkit-scrollbar-thumb    { background: var(--color-border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+::selection {
+  background: var(--color-accent);
+  color: #000;
+}
+html.light ::selection { color: #fff; }
+
+/* ============================================================
+   ACCENT GLOW UTILITY
+   ============================================================ */
+/* Subtle accent-colored box-shadow on a card or element */
+.glow-accent {
+  box-shadow: 0 0 0 1px var(--color-border-accent), 0 0 32px rgba(56,189,248,0.12);
+}
+.glow-accent:hover {
+  box-shadow: 0 0 0 1px var(--color-border-accent), 0 0 48px rgba(56,189,248,0.22);
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+.font-display {
+  font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+.font-code { font-family: 'JetBrains Mono', monospace; }
+
+/* ============================================================
+   LIGHT MODE BOX SHADOW HELPERS
+   ============================================================ */
+html.light .shadow-card {
+  box-shadow: 0 4px 24px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.06);
+}
+html.light .shadow-card:hover {
+  box-shadow: 0 12px 40px rgba(2,132,199,0.14), 0 2px 8px rgba(15,23,42,0.06);
+}
+
+/* ============================================================
+   PERFORMANCE & 60FPS HARDWARE ACCELERATION
+   ============================================================ */
+/* Promote key animated elements to hardware composite layers */
+.transform-gpu {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimize backdrop-filter GPU memory */
+.glass-panel, .glass-card, .glass-button {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Accessibility: Respect OS-level reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE OVERRIDES
+   ============================================================ */
+/* Prevent scrollbar-gutter from shifting layout on narrow viewports */
+@media (max-width: 1024px) {
+  body {
+    scrollbar-gutter: auto;
+  }
+}
+
+/* Fluid image defaults — prevent images overflowing their containers */
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure flex children never overflow their parents on small screens */
+.flex, [class*='flex'] {
+  min-width: 0;
+}
+
+/* ============================================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ============================================================ */
+@media (pointer: coarse) {
+  /* Larger minimum touch targets for small interactive elements */
+  button, a, [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* Exception for decorative/layout elements (those have explicit small sizes) */
+  .touch-target-exempt {
+    min-height: unset;
+    min-width: unset;
+  }
+}
+
+/* ============================================================
+   SHORT VIEWPORT & SMART DISPLAY OPTIMIZATIONS (Nest Hub 1024x600, Nest Hub Max 1280x800)
+   ============================================================ */
+@media (max-height: 820px) {
+  :root {
+    --section-py: clamp(1.75rem, 4.5vh, 3.25rem);
+    --gap-md:     clamp(0.5rem,  1.5vh, 1rem);
+    --gap-lg:     clamp(0.75rem, 2vh,   1.25rem);
+    --card-p:     clamp(0.75rem, 1.5vh, 1.25rem);
+  }
+}
+
+@media (max-height: 650px) {
+  :root {
+    --section-py: clamp(1.25rem, 3.5vh, 2.25rem);
+    --gap-md:     clamp(0.35rem, 1.2vh, 0.75rem);
+    --gap-lg:     clamp(0.5rem,  1.8vh, 1rem);
+    --card-p:     clamp(0.5rem,  1.2vh, 0.875rem);
+  }
+}
